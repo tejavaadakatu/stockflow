@@ -2,28 +2,31 @@
 {% block title %}Products - StockFlow{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h3 class="mb-0">Products</h3>
-    <a href="{{ url_for('product_new') }}" class="btn btn-primary">+ Add Product</a>
+<div class="page-head">
+    <div>
+        <h1 class="page-title">Products</h1>
+        <p class="page-sub">Manage your items and stock levels.</p>
+    </div>
+    <a href="{{ url_for('product_new') }}" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Add Product</a>
 </div>
 
-<form method="GET" class="row g-2 mb-3">
-    <div class="col-md-6">
-        <input type="text" name="q" value="{{ q }}" class="form-control"
-               placeholder="Search by name or SKU">
+<div class="card">
+    <div class="card-header">
+        <form method="GET" class="d-flex gap-2 flex-wrap align-items-center">
+            <div class="input-group" style="max-width: 420px;">
+                <span class="input-group-text"><i class="bi bi-search"></i></span>
+                <input type="text" name="q" value="{{ q }}" class="form-control"
+                       placeholder="Search by name or SKU">
+            </div>
+            <button type="submit" class="btn btn-outline-primary">Search</button>
+            {% if q %}
+                <a href="{{ url_for('product_list') }}" class="btn btn-link">Clear</a>
+            {% endif %}
+        </form>
     </div>
-    <div class="col-auto">
-        <button type="submit" class="btn btn-outline-secondary">Search</button>
-        {% if q %}
-            <a href="{{ url_for('product_list') }}" class="btn btn-link">Clear</a>
-        {% endif %}
-    </div>
-</form>
-
-<div class="card shadow-sm">
     <div class="table-responsive">
-        <table class="table table-hover align-middle mb-0">
-            <thead class="table-light">
+        <table class="table table-hover align-middle">
+            <thead>
                 <tr>
                     <th>Name</th>
                     <th>SKU</th>
@@ -37,14 +40,14 @@
             <tbody>
                 {% for p in products %}
                 <tr>
-                    <td>{{ p.name }}</td>
-                    <td>{{ p.sku }}</td>
-                    <td>{{ p.quantity_on_hand }}</td>
+                    <td class="fw-semibold">{{ p.name }}</td>
+                    <td><span class="sku">{{ p.sku }}</span></td>
+                    <td class="fw-semibold">{{ p.quantity_on_hand }}</td>
                     <td>
                         {% if p.is_low_stock %}
-                            <span class="badge bg-danger">Low stock</span>
+                            <span class="badge-soft badge-soft-danger">Low stock</span>
                         {% else %}
-                            <span class="badge bg-success">In stock</span>
+                            <span class="badge-soft badge-soft-success">In stock</span>
                         {% endif %}
                     </td>
                     <td>{{ '%.2f'|format(p.selling_price) if p.selling_price is not none else '-' }}</td>
@@ -52,24 +55,31 @@
                         <form method="POST" action="{{ url_for('product_adjust', product_id=p.id) }}"
                               class="d-flex gap-1">
                             <input type="number" name="change" class="form-control form-control-sm"
-                                   style="width: 80px;" placeholder="+/- N" required>
+                                   style="width: 85px;" placeholder="+/- N" required>
                             <button type="submit" class="btn btn-sm btn-outline-primary">Apply</button>
                         </form>
                     </td>
                     <td class="text-end">
                         <a href="{{ url_for('product_edit', product_id=p.id) }}"
-                           class="btn btn-sm btn-outline-secondary">Edit</a>
+                           class="btn btn-sm btn-outline-secondary btn-icon" title="Edit">
+                            <i class="bi bi-pencil"></i>
+                        </a>
                         <form method="POST" action="{{ url_for('product_delete', product_id=p.id) }}"
                               class="d-inline"
-                              onsubmit="return confirm('Delete {{ p.name }}? This cannot be undone.');">
-                            <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                              onsubmit='return confirm({{ ("Delete " ~ p.name ~ "? This cannot be undone.")|tojson }});'>
+                            <button type="submit" class="btn btn-sm btn-outline-danger btn-icon" title="Delete">
+                                <i class="bi bi-trash"></i>
+                            </button>
                         </form>
                     </td>
                 </tr>
                 {% else %}
                 <tr>
-                    <td colspan="7" class="text-center text-muted py-4">
-                        {% if q %}No products match your search.{% else %}No products yet. Click "Add Product" to create your first one.{% endif %}
+                    <td colspan="7">
+                        <div class="empty-state">
+                            <i class="bi bi-inbox"></i>
+                            {% if q %}No products match your search.{% else %}No products yet. Click "Add Product" to create your first one.{% endif %}
+                        </div>
                     </td>
                 </tr>
                 {% endfor %}
