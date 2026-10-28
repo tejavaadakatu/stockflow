@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Settings - StockFlow{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                <h3 class="mb-1">Settings</h3>
+                <p class="text-muted">Organization: <strong>{{ org.name }}</strong></p>
+                <form method="POST">
+                    <div class="mb-3">
+                        <label class="form-label">Default low stock threshold</label>
+                        <input type="number" name="default_low_stock_threshold" class="form-control"
+                               min="0" value="{{ value }}" required>
+                        <div class="form-text">
+                            Used for any product whose own low stock threshold is empty.
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save settings</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

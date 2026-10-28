@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - StockFlow{% endblock %}
+
+{% block content %}
+<h3 class="mb-3">Dashboard</h3>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="card shadow-sm text-center">
+            <div class="card-body">
+                <div class="text-muted">Total products</div>
+                <div class="display-6 fw-bold">{{ total_products }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card shadow-sm text-center">
+            <div class="card-body">
+                <div class="text-muted">Total quantity on hand</div>
+                <div class="display-6 fw-bold">{{ total_quantity }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card shadow-sm text-center">
+            <div class="card-body">
+                <div class="text-muted">Low stock items</div>
+                <div class="display-6 fw-bold {{ 'text-danger' if low_stock_items else 'text-success' }}">
+                    {{ low_stock_items|length }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-header bg-white">
+        <strong>Low stock items</strong>
+        <span class="text-muted small ms-2">(default threshold: {{ default_threshold }})</span>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Name</th>
+                    <th>SKU</th>
+                    <th>Quantity on hand</th>
+                    <th>Low stock threshold</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in low_stock_items %}
+                <tr>
+                    <td>{{ p.name }}</td>
+                    <td>{{ p.sku }}</td>
+                    <td class="text-danger fw-bold">{{ p.quantity_on_hand }}</td>
+                    <td>{{ p.effective_threshold }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="4" class="text-center text-muted py-4">
+                        No low stock items. Everything is well stocked.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
